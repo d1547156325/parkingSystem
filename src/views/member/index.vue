@@ -1,0 +1,198 @@
+<template>
+  <div class="app-container operator-segment">
+    <Collapse>
+      <div slot="controls" class="btn-item" style="display: inline-block">
+        <el-form
+          slot="content"
+          :inline="true"
+          class="search-form"
+        >
+          <el-form-item label="车位:">
+            <el-input v-model="input" placeholder="请输入车位编号或所查区域" size="small" style="width: 190px" />
+          </el-form-item>
+          <el-form-item label="车位状态:">
+            <el-select placeholder="请选择车位状态或备注" size="small">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              size="small"
+            >查询
+            </el-button>
+            <!--           TODO 添加车位功能？ -->
+          </el-form-item>
+        </el-form>
+      </div>
+    </Collapse>
+
+    <el-table
+      v-loading="listLoading"
+      element-loading-text="正在加载"
+      tooltip-effect="dark"
+      :data="list"
+      border
+      style="width: 100%"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column
+        type="selection"
+        width="55"
+      />
+      <el-table-column
+        prop="spaceId"
+        label="会员ID"
+        align="center"
+        width="180"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.memId }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="spaceNum"
+        label="车主名称"
+        align="center"
+        width="180"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.ownerName }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="spaceAddress"
+        label="车牌号码"
+        align="center"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.carNum }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="spaceStatus"
+        label="会员类别"
+        align="center"
+      >
+        <template slot-scope="scope">
+          <el-tag>{{ judgeSort(scope.row.memSort) }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="spaceRemark"
+        label="截止日期"
+        align="center"
+      >
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          {{ scope.row.memLimit }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="operate"
+        label="操作"
+        align="center"
+        width="210"
+      >
+        <template slot-scope="scope">
+          <el-button size="small" type="primary" icon="el-icon-edit">充值</el-button>
+          <!--          <el-button v-if="scope.row.spaceStatus !== 2" size="small" type="danger" icon="el-icon-warning">下线</el-button>-->
+          <!--          <el-button v-if="scope.row.spaceStatus === 2" size="small" type="info" icon="el-icon-info">上线</el-button>-->
+        </template>
+      </el-table-column>
+    </el-table>
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="listQuery.current"
+      :limit.sync="listQuery.size"
+      @pagination="fetchData"
+    />
+
+  </div>
+</template>
+
+<script>
+import Collapse from '@/components/Collapse'
+import Pagination from '@/components/Pagination'
+export default {
+  name: 'Member',
+  components: { Collapse, Pagination },
+
+  data() {
+    return {
+      currentPage1: 1,
+      radio: -1,
+      multipleSelection: [],
+      input: '',
+      total: 1,
+      listQuery: {
+        current: 1,
+        size: 10,
+        spaceId: null,
+        spaceNum: null
+      },
+      listLoading: false,
+      list: [{
+        memId: 201316131,
+        ownerName: '张三',
+        carNum: '湘A25116',
+        memSort: 1,
+        memLimit: '2020-5-20'
+      }, {
+        memId: 201316131,
+        ownerName: '张三',
+        carNum: '湘A25116',
+        memSort: 1,
+        memLimit: '2020-5-20'
+      }, {
+        memId: 201316131,
+        ownerName: '张三',
+        carNum: '湘A25116',
+        memSort: 1,
+        memLimit: '2020-5-20'
+      }, {
+        memId: 201316131,
+        ownerName: '张三',
+        carNum: '湘A25116',
+        memSort: 3,
+        memLimit: '2020-5-20'
+      }]
+    }
+  },
+  created() {
+    this.fetchData()
+  },
+  methods: {
+    // 获取数据
+    fetchData() {
+      // this.listLoading = true
+      // eslint-disable-next-line no-undef
+      // getList(this.listQuery.current, this.listQuery.size, this.listQuery.experimentId, this.listQuery.experimentStatus).then(response => {
+      //   // this.list = response.data
+      //   this.total = 1000
+      //   this.listLoading = false
+      // }).catch(() => {
+      //   this.listLoading = false
+      // })
+    },
+    // 判断会员类别
+    judgeSort(memSort) {
+      if (memSort === 1) { return '月租' } else if (memSort === 2) { return '年租' } else if (memSort === 3) { return '固定车' }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>
