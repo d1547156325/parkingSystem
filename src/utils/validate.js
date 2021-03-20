@@ -27,7 +27,6 @@ export function isvalidPhone(str) {
   return reg.test(str)
 }
 
-
 export function isvalidzhanghao(str) {
   const reg = /^^[0-9a-zA-Z]+$/
   return reg.test(str)
