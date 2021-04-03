@@ -1,9 +1,9 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form ref="loginForm" :model="loginForm" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">登陆</h3>
       </div>
 
       <el-form-item prop="username">
@@ -41,12 +41,12 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click="handleLogin">Login</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click="handleLogin">登陆</el-button>
 
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
+<!--      <div class="tips">-->
+<!--        <span style="margin-right:20px;">username: admin</span>-->
+<!--        <span> password: any</span>-->
+<!--      </div>-->
 
     </el-form>
   </div>
@@ -74,8 +74,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -106,24 +106,37 @@ export default {
       })
     },
     handleLogin() {
-      if (this.loginForm.username === 'admin' && this.loginForm.password === '111111') {
-        this.$router.push({ path: '/' })
-      }
-      // this.$refs.loginForm.validate(valid => {
-      //   if (valid) {
-      //     this.$router.push({ path: '/' })
-      //     //     this.loading = true
-      //     //     this.$store.dispatch('user/login', this.loginForm).then(() => {
-      //     //       this.$router.push({ path: this.redirect || '/' })
-      //     //       this.loading = false
-      //     //     }).catch(() => {
-      //     //       this.loading = false
-      //     //     })
-      //   } else {
-      //     console.log('error submit!!')
-      //     return false
-      //   }
-      // })
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          this.loading = true
+          const params = new FormData()
+          params.append('username', this.loginForm.username)
+          params.append('password', this.loginForm.password)
+          this.$store.dispatch('user/login', this.loginForm).then(() => {
+            this.$router.push({ path: this.redirect || '/' })
+            this.loading = false
+          }).catch(() => {
+            this.loading = false
+          })
+          // login(params).then(response => {
+          //   window.localStorage.setItem('userInfo', JSON.stringify(response.data.username)) // 将用户信息存到localStorage中
+          //   this.$store.commit('user/SET_TOKEN', 'admin_token')
+          //   this.$router.push({ path: '/' })
+          //   Message({
+          //     message: response.msg,
+          //     type: 'success',
+          //     duration: 5 * 1000
+          //   })
+          //   setToken(response.data.authorities.authority)
+          //   this.loading = false
+          // }).catch(() => {
+          //   this.loading = false
+          // })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     }
   }
 }

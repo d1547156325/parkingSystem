@@ -11,7 +11,7 @@
             <el-input v-model="input" placeholder="请输入记录编号，车主名字，车牌号码" size="small" style="width: 260px" />
           </el-form-item>
           <el-form-item label="车位状态:">
-            <el-select placeholder="请选择车位状态或备注" size="small">
+            <el-select v-model="value" placeholder="请选择车位状态或备注" size="small">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -25,6 +25,7 @@
               type="primary"
               icon="el-icon-search"
               size="small"
+              @click="fetchData"
             >查询
             </el-button>
             <!--           TODO 添加车位功能？ -->
@@ -62,7 +63,7 @@
         width="120"
       >
         <template slot-scope="scope">
-          {{ scope.row.ownerName }}
+          {{ judgeCarNum(scope.row.car) }}
         </template>
       </el-table-column>
       <el-table-column
@@ -71,7 +72,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.carNum }}
+          {{ judgeCarOwner(scope.row.car) }}
         </template>
       </el-table-column>
       <el-table-column
@@ -91,7 +92,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.carPos }}
+          {{ judgeSpace(scope.row.space) }}
         </template>
       </el-table-column>
       <el-table-column
@@ -102,7 +103,7 @@
       >
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          {{ scope.row.inDate }}
+          {{ scope.row.enterDate }}
         </template>
       </el-table-column>
       <el-table-column
@@ -113,16 +114,7 @@
       >
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          {{ scope.row.outDate }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="spaceAddress"
-        label="停车时间"
-        align="center"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.times }}
+          {{ scope.row.leaveDate }}
         </template>
       </el-table-column>
       <el-table-column
@@ -131,7 +123,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.payNum }}
+          {{ scope.row.money }}
         </template>
       </el-table-column>
       <el-table-column
@@ -159,6 +151,7 @@
 </template>
 
 <script>
+import { listRecord } from '@/api/record'
 import Collapse from '@/components/Collapse'
 import Pagination from '@/components/Pagination'
 export default {
@@ -179,39 +172,21 @@ export default {
         spaceNum: null
       },
       listLoading: false,
-      list: [{
-        recordId: 201316131,
-        ownerName: '张三',
-        carNum: '湘A72610',
-        payment: 0,
-        inDate: '2021-3-1',
-        outDate: '2021-12-10',
-        payNum: 500,
-        carPos: 'A50',
-        times: '520小时'
-      },
-      {
-        recordId: 201316131,
-        ownerName: '张三',
-        carNum: '湘A72610',
-        payment: 2,
-        inDate: '2021-3-1',
-        outDate: '2021-3-10',
-        payNum: 500,
-        carPos: 'A50',
-        times: '520小时'
-      },
-      {
-        recordId: 201316131,
-        ownerName: '张三',
-        carNum: '湘A72610',
-        payment: 3,
-        inDate: '2021-3-1',
-        outDate: '2021-3-10',
-        payNum: 0,
-        carPos: 'A50',
-        times: '520小时'
-      }]
+      list: null,
+      options: [{
+        value: '0',
+        label: '临时支付'
+      }, {
+        value: '1',
+        label: '月租卡'
+      }, {
+        value: '2',
+        label: '年租卡'
+      }, {
+        value: '3',
+        label: '固定车'
+      }],
+      value: ''
     }
   },
   created() {
@@ -220,23 +195,31 @@ export default {
   methods: {
     // 获取数据
     fetchData() {
-      // this.listLoading = true
-      // eslint-disable-next-line no-undef
-      // getList(this.listQuery.current, this.listQuery.size, this.listQuery.experimentId, this.listQuery.experimentStatus).then(response => {
-      //   // this.list = response.data
-      //   this.total = 1000
-      //   this.listLoading = false
-      // }).catch(() => {
-      //   this.listLoading = false
-      // })
+      this.listLoading = true
+      listRecord(this.input, this.value, (this.listQuery.current - 1), this.listQuery.size).then(response => {
+        this.list = response.data.content
+        this.total = response.data.totalPages
+        this.listLoading = false
+      }).catch(() => {
+        this.listLoading = false
+      })
     },
     // 判断状态
     judgePay(payment) {
-      if (payment === 0) { return '临时车' } else if (payment === 1) { return '月租卡' } else if (payment === 2) { return '年租卡' } else return '固定车'
+      if (payment === 0) { return '临时支付' } else if (payment === 1) { return '月租卡' } else if (payment === 2) { return '年租卡' } else return '固定车'
     },
     // 判断备注
     judgeRemark(spaceRemark) {
       if (spaceRemark === 1) { return '固定车主车位' } else { return '自由车位' }
+    },
+    judgeCarOwner(car) {
+      if (car != null) { return car.carOwner }
+    },
+    judgeCarNum(car) {
+      if (car != null) { return car.carNum }
+    },
+    judgeSpace(space) {
+      if (space != null) { return space.spaceNum }
     },
     handleSelectionChange(val) {
       this.multipleSelection = val

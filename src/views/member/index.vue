@@ -7,11 +7,11 @@
           :inline="true"
           class="search-form"
         >
-          <el-form-item label="车位:">
-            <el-input v-model="input" placeholder="请输入车位编号或所查区域" size="small" style="width: 190px" />
+          <el-form-item label="关键字:">
+            <el-input v-model="input" placeholder="请输入关键字查询" size="small" style="width: 190px" />
           </el-form-item>
-          <el-form-item label="车位状态:">
-            <el-select placeholder="请选择车位状态或备注" size="small">
+          <el-form-item label="会员类别:">
+            <el-select v-model="value" placeholder="请输入会员类别" size="small">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -25,9 +25,16 @@
               type="primary"
               icon="el-icon-search"
               size="small"
+              @click="fetchData"
             >查询
             </el-button>
-            <!--           TODO 添加车位功能？ -->
+            <!--            <el-button-->
+            <!--              type="primary"-->
+            <!--              icon="el-icon-plus"-->
+            <!--              size="small"-->
+            <!--              @click="gotoAdd"-->
+            <!--            >添加-->
+            <!--            </el-button>-->
           </el-form-item>
         </el-form>
       </div>
@@ -50,29 +57,41 @@
         prop="spaceId"
         label="会员ID"
         align="center"
-        width="180"
+        width="120"
       >
         <template slot-scope="scope">
-          {{ scope.row.memId }}
+          {{ scope.row.memberId }}
         </template>
       </el-table-column>
       <el-table-column
-        prop="spaceNum"
+        prop="carOwner"
         label="车主名称"
         align="center"
-        width="180"
+        width="120"
       >
         <template slot-scope="scope">
-          {{ scope.row.ownerName }}
+          {{ scope.row.car.carOwner }}
+<!--          {{ judgeCarOwner(scope.row.car) }}-->
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        prop="phone"
+        label="电话号码"
+        align="center"
+        width="120"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.phone }}
         </template>
       </el-table-column>
       <el-table-column
-        prop="spaceAddress"
+        prop="carNum"
         label="车牌号码"
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.carNum }}
+          {{ scope.row.car.carNum }}
         </template>
       </el-table-column>
       <el-table-column
@@ -81,7 +100,17 @@
         align="center"
       >
         <template slot-scope="scope">
-          <el-tag>{{ judgeSort(scope.row.memSort) }}</el-tag>
+          <el-tag>{{ judgeSort(scope.row.memberType) }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="spaceRemark"
+        label="开始日期"
+        align="center"
+      >
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          {{ scope.row.openDate }}
         </template>
       </el-table-column>
       <el-table-column
@@ -91,21 +120,22 @@
       >
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          {{ scope.row.memLimit }}
+          {{ scope.row.endDate }}
         </template>
       </el-table-column>
-      <el-table-column
-        prop="operate"
-        label="操作"
-        align="center"
-        width="210"
-      >
-        <template slot-scope="scope">
-          <el-button size="small" type="primary" icon="el-icon-edit">充值</el-button>
-          <!--          <el-button v-if="scope.row.spaceStatus !== 2" size="small" type="danger" icon="el-icon-warning">下线</el-button>-->
-          <!--          <el-button v-if="scope.row.spaceStatus === 2" size="small" type="info" icon="el-icon-info">上线</el-button>-->
-        </template>
-      </el-table-column>
+      <!--      <el-table-column-->
+      <!--        prop="operate"-->
+      <!--        label="操作"-->
+      <!--        align="center"-->
+      <!--        width="210"-->
+      <!--      >-->
+      <!--        <template slot-scope="scope">-->
+      <!--&lt;!&ndash;          <el-button size="small" type="primary" icon="el-icon-edit">充值</el-button>&ndash;&gt;-->
+      <!--&lt;!&ndash;          <el-button size="small" type="primary" icon="el-icon-edit">编辑</el-button>&ndash;&gt;-->
+      <!--          &lt;!&ndash;          <el-button v-if="scope.row.spaceStatus !== 2" size="small" type="danger" icon="el-icon-warning">下线</el-button>&ndash;&gt;-->
+      <!--          &lt;!&ndash;          <el-button v-if="scope.row.spaceStatus === 2" size="small" type="info" icon="el-icon-info">上线</el-button>&ndash;&gt;-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
     </el-table>
     <pagination
       v-show="total>0"
@@ -119,6 +149,7 @@
 </template>
 
 <script>
+import { listMember } from '@/api/member'
 import Collapse from '@/components/Collapse'
 import Pagination from '@/components/Pagination'
 export default {
@@ -134,36 +165,21 @@ export default {
       total: 1,
       listQuery: {
         current: 1,
-        size: 10,
-        spaceId: null,
-        spaceNum: null
+        size: 10
       },
       listLoading: false,
-      list: [{
-        memId: 201316131,
-        ownerName: '张三',
-        carNum: '湘A25116',
-        memSort: 1,
-        memLimit: '2020-5-20'
+      list: null,
+      options: [{
+        value: '1',
+        label: '月租卡'
       }, {
-        memId: 201316131,
-        ownerName: '张三',
-        carNum: '湘A25116',
-        memSort: 1,
-        memLimit: '2020-5-20'
+        value: '2',
+        label: '年租卡'
       }, {
-        memId: 201316131,
-        ownerName: '张三',
-        carNum: '湘A25116',
-        memSort: 1,
-        memLimit: '2020-5-20'
-      }, {
-        memId: 201316131,
-        ownerName: '张三',
-        carNum: '湘A25116',
-        memSort: 3,
-        memLimit: '2020-5-20'
-      }]
+        value: '3',
+        label: '固定车'
+      }],
+      value: ''
     }
   },
   created() {
@@ -172,19 +188,21 @@ export default {
   methods: {
     // 获取数据
     fetchData() {
-      // this.listLoading = true
-      // eslint-disable-next-line no-undef
-      // getList(this.listQuery.current, this.listQuery.size, this.listQuery.experimentId, this.listQuery.experimentStatus).then(response => {
-      //   // this.list = response.data
-      //   this.total = 1000
-      //   this.listLoading = false
-      // }).catch(() => {
-      //   this.listLoading = false
-      // })
+      this.listLoading = true
+      listMember(this.input, this.value, (this.listQuery.current - 1), this.listQuery.size).then(response => {
+        this.list = response.data.content
+        this.total = response.data.totalPages
+        this.listLoading = false
+      }).catch(() => {
+        this.listLoading = false
+      })
     },
     // 判断会员类别
     judgeSort(memSort) {
-      if (memSort === 1) { return '月租' } else if (memSort === 2) { return '年租' } else if (memSort === 3) { return '固定车' }
+      if (memSort === 1) { return '月租卡' } else if (memSort === 2) { return '年租卡' } else if (memSort === 3) { return '固定车' }
+    },
+    gotoAdd() {
+      this.$router.push({ path: '/member/memberAdd' })
     },
     handleSelectionChange(val) {
       this.multipleSelection = val

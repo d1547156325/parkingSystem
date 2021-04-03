@@ -4,22 +4,30 @@ import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
-
+const path = require('path')
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true }}
 ])
 
+//
+// new customTitlebar.Titlebar({
+//   backgroundColor: customTitlebar.Color.fromHex('#444')
+// })
+
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    // frame: false,
+    width: 1400,
+    height: 780,
+    frame: false,
     webPreferences: {
-
+      preload: path.join(__dirname, '../src/preload.js'),
+      enableRemoteModule: true,
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+      nodeIntegration: true
     }
   })
 
@@ -30,7 +38,7 @@ async function createWindow() {
   } else {
     createProtocol('app')
     // Load the index.html when not in development
-    win.loadURL('app://./index.html')
+    win.loadURL('app://index.html')
   }
 }
 

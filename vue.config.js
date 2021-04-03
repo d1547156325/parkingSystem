@@ -6,7 +6,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || 'vue Admin Template' // page title
+const name = defaultSettings.title || '停车场管理系统' // page title
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
@@ -30,13 +30,25 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
+    disableHostCheck: true,
+    host: '0.0.0.0',
     port: port,
     open: true,
     overlay: {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+    // before: require('./mock/mock-server.js'),
+    proxy: {
+      '/parking': { //  是.env.development 文件的 /dev-api
+        target: ' http://127.0.0.1:8080',
+        chargeOrigin: true, // 开启代理服务器
+        pathRewrite: {
+          // '^/dev-api': '',
+          ['^' + process.env.VUE_APP_BASE_API]: '' // /dev-api 替换为空  https://www.easy-mock.com/mock/5f97da2747e82c655543228e/test-admin/dev-api
+        }
+      }
+    }
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

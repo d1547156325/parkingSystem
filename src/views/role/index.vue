@@ -27,7 +27,6 @@
               size="small"
             >查询
             </el-button>
-            <!--           TODO 添加车位功能？ -->
           </el-form-item>
         </el-form>
       </div>
@@ -53,7 +52,7 @@
         width="180"
       >
         <template slot-scope="scope">
-          {{ scope.row.spaceId }}
+          {{ scope.row.userId }}
         </template>
       </el-table-column>
       <el-table-column
@@ -63,7 +62,7 @@
         width="180"
       >
         <template slot-scope="scope">
-          {{ scope.row.spaceNum }}
+          {{ scope.row.username }}
         </template>
       </el-table-column>
       <el-table-column
@@ -72,7 +71,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.spaceAddress }}
+          {{ scope.row.password }}
         </template>
       </el-table-column>
       <el-table-column
@@ -147,38 +146,7 @@ export default {
         spaceNum: null
       },
       listLoading: false,
-      list: [{
-        spaceId: 201316131,
-        spaceNum: 'A005',
-        spaceAddress: 'A区',
-        spaceStatus: 1,
-        spaceRemark: '固定车主车位',
-        spaceLin: '浙A156326'
-      },
-      {
-        spaceId: 201316131,
-        spaceNum: 'A005',
-        spaceAddress: 'A区',
-        spaceStatus: 1,
-        spaceRemark: '固定车主车位',
-        spaceLin: '浙A156326'
-      },
-      {
-        spaceId: 201316131,
-        spaceNum: 'A005',
-        spaceAddress: 'A区',
-        spaceStatus: 1,
-        spaceRemark: '固定车主车位',
-        spaceLin: '浙A156326'
-      },
-      {
-        spaceId: 201316131,
-        spaceNum: 'A005',
-        spaceAddress: 'A区',
-        spaceStatus: 2,
-        spaceRemark: '固定车主车位',
-        spaceLin: '暂无'
-      }]
+      list: null
     }
   },
   created() {

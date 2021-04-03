@@ -1,42 +1,53 @@
-<!--<template>-->
-<!--  <div class="dashboard-container">-->
-<!--    <div class="dashboard-text">name: {{ name }}</div>-->
-<!--  </div>-->
-<!--</template>-->
+
 <template>
+
   <el-row>
-    <el-col :span="24"><div class="grid-content bg-purple-dark">
-      <el-card shadow="never" body-style="padding=2px">
-        <div class="dashboard-text">停车场管理系统</div>
-      </el-card>
-    </div>
-    </el-col>
-    <el-col :span="15">
+    <!--    <el-col :span="24"><div class="grid-content bg-purple-dark">-->
+    <!--      <el-card shadow="never" body-style="padding=1px">-->
+    <!--        <div class="dashboard-text">停车场管理系统</div>-->
+    <!--      </el-card>-->
+    <!--    </div>-->
+    <!--    </el-col>-->
+    <panel-group />
+    <el-col :span="18">
       <div class="grid-content bg-purple">
         <el-card class="box-card" shadow="never" body-style="padding=2px">
           <video id="videoCamera" :width="videoWidth" :height="videoHeight" autoplay />
           <canvas id="canvasCamera" style="display:none;" :width="videoWidth" :height="videoHeight" />
-
         </el-card>
       </div>
     </el-col>
-    <el-col :span="9"><div class="grid-content bg-purple-light">
-      <el-card class="box-card" shadow="never" body-style="padding=2px">
-        <el-button v-if="isCameraFlag==false" type="primary" @click="getCompetence()">打开摄像头</el-button>
-        <el-button v-else-if="isCameraFlag==true" type="danger" @click="stopNavigator()">关闭摄像头</el-button>
-        <el-button @click="setImage()">拍照</el-button>
-        <br><br>
-        <div v-if="imgSrc" class="img_bg_camera">
-          <img :src="imgSrc" alt="" class="tx_img">
-        </div>
-      </el-card>
-    </div></el-col>
+    <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
+      <box-card />
+    </el-col>
+    <!--    <el-col :span="9">-->
+    <!--      <div class="grid-content bg-purple-light">-->
+    <!--        <el-card class="box-card" shadow="never" body-style="padding=2px">-->
+    <!--          &lt;!&ndash;                <el-button v-if="isCameraFlag==false" type="primary" @click="getCompetence()">打开摄像头</el-button>&ndash;&gt;-->
+    <!--          &lt;!&ndash;        <el-button v-else-if="isCameraFlag==true" type="danger" @click="stopNavigator()">关闭摄像头</el-button>&ndash;&gt;-->
+<!--    <el-button @click="setImage()">拍照</el-button>-->
+    <!--          &lt;!&ndash;          <div>&ndash;&gt;-->
+    <!--          &lt;!&ndash;            <el-input placeholder="请输入内容" v-model="number_in" :disabled="true" style="width: 200px" >&ndash;&gt;-->
+    <!--          &lt;!&ndash;              <template slot="prepend">车牌号码:</template>&ndash;&gt;-->
+    <!--          &lt;!&ndash;            </el-input>&ndash;&gt;-->
+    <!--          &lt;!&ndash;          </div>&ndash;&gt;-->
+    <!--          <div v-text="number_in"></div>-->
+    <!--          <br><br>-->
+    <!--          <div v-if="imgSrc" class="img_bg_camera">-->
+    <!--            <img :src="imgSrc" alt="" class="tx_img">-->
+    <!--          </div>-->
+    <!--        </el-card>-->
+    <!--      </div>-->
+    <!--    </el-col>-->
   </el-row>
 
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import PanelGroup from '@/components/PanelGroup'
+import BoxCard from '@/components/BoxCard'
+import { carLicense } from '@/api/car'
 
 export default {
   name: 'Dashboard',
@@ -45,6 +56,11 @@ export default {
       'name'
     ])
   },
+  components: {
+    PanelGroup,
+    BoxCard
+  },
+
   data() {
     return {
       isCameraFlag: false,
@@ -53,9 +69,18 @@ export default {
       imgSrc: '',
       thisCancas: null,
       thisContext: null,
-      thisVideo: null
+      thisVideo: null,
+      number_in: '湘LBZ068',
+      imgFile: ''
     }
   },
+  created() {
+  },
+  // mounted() {
+  //   setTimeout(() => {
+  //     this.getCompetence()
+  //   }, 20)
+  // },
   methods: {
     // 调用权限（打开摄像头功能）
     getCompetence() {
@@ -103,7 +128,6 @@ export default {
       })
     },
     //  绘制图片（拍照功能）
-
     setImage() {
       var _this = this
       // 点击，canvas画图
@@ -112,9 +136,19 @@ export default {
       var image = this.thisCancas.toDataURL('image/png')
       _this.imgSrc = image
       this.$emit('refreshDataList', this.imgSrc)
+      this.imgFile = this.dataURLtoFile(image, 'test.jpg')
+      const param = new FormData()
+      param.append('file', this.imgFile)
+      carLicense(param).then(response => {
+        console.log(1)
+        this.number_in = response.data
+        console.log(response.data)
+      }).catch(() => {
+
+      })
+      console.log(this.imgFile)
     },
     // base64转文件
-
     dataURLtoFile(dataurl, filename) {
       var arr = dataurl.split(',')
       var mime = arr[0].match(/:(.*?);/)[1]
@@ -124,10 +158,11 @@ export default {
       while (n--) {
         u8arr[n] = bstr.charCodeAt(n)
       }
+      // this.imgFile = new File([u8arr], 'filename', { type: mime })
       return new File([u8arr], filename, { type: mime })
     },
-    // 关闭摄像头
 
+    // 关闭摄像头
     stopNavigator() {
       this.thisVideo.srcObject.getTracks()[0].stop()
       this.isCameraFlag = false
