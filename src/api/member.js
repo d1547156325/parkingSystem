@@ -19,3 +19,11 @@ export function updateMember(data) {
     data
   })
 }
+
+export function memberLogin(phone) {
+  return request({
+    url: '/member/memberLogin',
+    method: 'get',
+    params:{ phone }
+  })
+}

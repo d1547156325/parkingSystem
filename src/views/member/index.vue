@@ -11,7 +11,7 @@
             <el-input v-model="input" placeholder="请输入关键字查询" size="small" style="width: 190px" />
           </el-form-item>
           <el-form-item label="会员类别:">
-            <el-select v-model="value" placeholder="请输入会员类别" size="small">
+            <el-select v-model="value" placeholder="请输入会员类别" size="small" @change="fetchData">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -47,12 +47,11 @@
       :data="list"
       border
       style="width: 100%"
-      @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-      />
+<!--      <el-table-column-->
+<!--        type="selection"-->
+<!--        width="55"-->
+<!--      />-->
       <el-table-column
         prop="spaceId"
         label="会员ID"
@@ -175,9 +174,6 @@ export default {
       }, {
         value: '2',
         label: '年租卡'
-      }, {
-        value: '3',
-        label: '固定车'
       }],
       value: ''
     }
@@ -191,7 +187,7 @@ export default {
       this.listLoading = true
       listMember(this.input, this.value, (this.listQuery.current - 1), this.listQuery.size).then(response => {
         this.list = response.data.content
-        this.total = response.data.totalPages
+        this.total = response.data.totalElements
         this.listLoading = false
       }).catch(() => {
         this.listLoading = false
@@ -199,7 +195,7 @@ export default {
     },
     // 判断会员类别
     judgeSort(memSort) {
-      if (memSort === 1) { return '月租卡' } else if (memSort === 2) { return '年租卡' } else if (memSort === 3) { return '固定车' }
+      if (memSort === 1) { return '月租卡' } else if (memSort === 2) { return '年租卡' }
     },
     gotoAdd() {
       this.$router.push({ path: '/member/memberAdd' })

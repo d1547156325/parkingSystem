@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
 // 获取车位列表
-export function listSpace(keyword, spaceRemark, spaceStatus, page, limit) {
+export function listSpace(keyword, spaceStatus, page, limit) {
   return request({
     url: '/space/listSpace',
     method: 'get',
-    params: { keyword, spaceRemark, spaceStatus, page, limit }
+    params: { keyword, spaceStatus, page, limit }
   })
 }
 

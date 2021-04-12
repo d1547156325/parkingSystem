@@ -8,6 +8,17 @@ export function listUser(keyword, page, limit) {
   })
 }
 
+export function updateUser(data) {
+  return request({
+    url: '/user/listUser',
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data
+  })
+}
+
 export function login(data) {
   return request({
     url: '/login',

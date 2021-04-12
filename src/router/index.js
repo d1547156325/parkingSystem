@@ -44,6 +44,14 @@ export const constantRoutes = [
   },
 
   {
+    path: '/memberLogin',
+    // name: 'memberAdd',
+    hidden: true,
+    component: () => import('@/views/member/memberLogin')
+    // meta: { title: '添加会员', icon: 'dashboard' }
+  },
+
+  {
     path: '/memberAdd',
     // name: 'memberAdd',
     hidden: true,

@@ -17,3 +17,11 @@ export function carLicense(data) {
     data
   })
 }
+
+export function listSortCar(page, limit, sorts) {
+  return request({
+    url: '/car/listSortCar',
+    method: 'get',
+    params: { page, limit, sorts }
+  })
+}

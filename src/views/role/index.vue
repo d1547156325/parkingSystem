@@ -7,25 +7,31 @@
           :inline="true"
           class="search-form"
         >
-          <el-form-item label="车位:">
-            <el-input v-model="input" placeholder="请输入车位编号或所查区域" size="small" style="width: 190px" />
+          <el-form-item label="关键字:">
+            <el-input v-model="input" placeholder="请输入关键字" size="small" style="width: 120px" />
           </el-form-item>
-          <el-form-item label="车位状态:">
-            <el-select placeholder="请选择车位状态或备注" size="small">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
+<!--          <el-form-item label="车位状态:">-->
+<!--            <el-select placeholder="请选择车位状态或备注" size="small">-->
+<!--              <el-option-->
+<!--                v-for="item in options"-->
+<!--                :key="item.value"-->
+<!--                :label="item.label"-->
+<!--                :value="item.value"-->
+<!--              />-->
+<!--            </el-select>-->
+<!--          </el-form-item>-->
           <el-form-item>
             <el-button
               type="primary"
               icon="el-icon-search"
               size="small"
             >查询
+            </el-button>
+            <el-button
+              type="primary"
+              icon="el-icon-plus"
+              size="small"
+            >添加
             </el-button>
           </el-form-item>
         </el-form>
@@ -47,9 +53,8 @@
       />
       <el-table-column
         prop="spaceId"
-        label="车位ID"
+        label="管理编号"
         align="center"
-        width="180"
       >
         <template slot-scope="scope">
           {{ scope.row.userId }}
@@ -57,9 +62,8 @@
       </el-table-column>
       <el-table-column
         prop="spaceNum"
-        label="车位编号"
+        label="用户名"
         align="center"
-        width="180"
       >
         <template slot-scope="scope">
           {{ scope.row.username }}
@@ -67,40 +71,24 @@
       </el-table-column>
       <el-table-column
         prop="spaceAddress"
-        label="所需区域"
+        label="姓名"
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.password }}
+          {{ scope.row.name }}
         </template>
       </el-table-column>
+
       <el-table-column
-        prop="spaceStatus"
-        label="车位状态"
+        prop="spaceAddress"
+        label="角色"
         align="center"
       >
         <template slot-scope="scope">
-          <el-tag :type="scope.row.spaceStatus == 1? 'success':'info' ">{{ judgeStatus(scope.row.spaceStatus) }}</el-tag>
+          {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column
-        prop="spaceRemark"
-        label="车位备注"
-        align="center"
-      >
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.spaceRemark == 1? 'success':'info'">{{ judgeRemark(scope.row.spaceRemark) }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="spaceRemark"
-        label="停车号码"
-        align="center"
-      >
-        <template slot-scope="scope">
-          {{ scope.row.spaceLin }}
-        </template>
-      </el-table-column>
+
       <el-table-column
         prop="operate"
         label="操作"
@@ -109,8 +97,6 @@
       >
         <template slot-scope="scope">
           <el-button size="small" type="primary" icon="el-icon-edit">编辑</el-button>
-          <el-button v-if="scope.row.spaceStatus !== 2" size="small" type="danger" icon="el-icon-warning">下线</el-button>
-          <el-button v-if="scope.row.spaceStatus === 2" size="small" type="info" icon="el-icon-info">上线</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -129,7 +115,7 @@
 import Collapse from '@/components/Collapse'
 import Pagination from '@/components/Pagination'
 export default {
-  name: 'Space',
+  name: 'User',
   components: { Collapse, Pagination },
 
   data() {
@@ -146,7 +132,11 @@ export default {
         spaceNum: null
       },
       listLoading: false,
-      list: null
+      list: [{
+        userId: 0,
+        username: 'huhu',
+        name: '张三'
+      }]
     }
   },
   created() {

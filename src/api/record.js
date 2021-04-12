@@ -8,3 +8,11 @@ export function listRecord(keyword, payment, page, limit) {
     params: { keyword, payment, page, limit }
   })
 }
+
+export function enterRecord(start, end, page, limit) {
+  return request({
+    url: '/record/enterDateRecord',
+    method: 'get',
+    params: { start, end, page, limit }
+  })
+}

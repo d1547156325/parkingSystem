@@ -45,7 +45,7 @@ export default {
         article_count: 1024,
         pageviews_count: 1024
       },
-      number_in: '湘LBZ068',
+      number_in: '湘LBZ06ss8',
       memberType: '临时车',
       times_in: 15
     }

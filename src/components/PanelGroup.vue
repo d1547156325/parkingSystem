@@ -58,6 +58,8 @@
 <script>
 import CountTo from 'vue-count-to'
 import { listSpace } from '@/api/space'
+import { enterRecord } from '@/api/record'
+import moment from 'moment'
 
 export default {
   components: {
@@ -77,23 +79,31 @@ export default {
   methods: {
     fetchData() {
       // 所有车位
-      listSpace('', -1, -1, 0, 10).then(response => {
+      listSpace('', -1, 0, 10).then(response => {
         this.spaceAll = response.data.totalElements
       }).catch(() => {
         // this.listLoading = false
       })
       // 已占车位
-      listSpace('', 1, -1, 0, 10).then(response => {
+      listSpace('', 1, 0, 10).then(response => {
         this.spaceIn = response.data.totalElements
       }).catch(() => {
         // this.listLoading = false
       })
       // 未占车位
-      listSpace('', 0, -1, 0, 10).then(response => {
+      listSpace('', 0, 0, 10).then(response => {
         this.spaceDe = response.data.totalElements
       }).catch(() => {
         // this.listLoading = false
+      }),
+      // 今日车辆
+
+      enterRecord(this.DateForm(new Date()), this.DateForm(new Date().setDate(new Date().getDate() + 1))).then(response => {
+        this.carNum = response.data.totalElements
       })
+    },
+    DateForm(date) {
+      return moment(date).format('YYYY-MM-DD')
     },
     handleSetLineChartData(type) {
       this.$emit('handleSetLineChartData', type)

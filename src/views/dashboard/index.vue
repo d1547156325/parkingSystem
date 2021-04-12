@@ -18,27 +18,37 @@
       </div>
     </el-col>
     <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
-      <box-card />
+      <!--      <box-card />-->
+      <el-card class="box-card-component" style="margin-left:8px;">
+        <div slot="header" class="box-card-header">
+          <img src="https://wpimg.wallstcn.com/e7d23d71-cf19-4b90-a1cc-f56af8c0903d.png">
+        </div>
+        <div style="position:relative;">
+          <pan-thumb :image="avatar" class="panThumb" />
+          <mallki class-name="mallki-text" :text="name" />
+          <div style="padding-top:35px;" class="progress-item">
+            <span class="span_text">车牌号码:</span>
+            <span class="span_text" v-text="number_in" />
+          </div>
+          <el-divider></el-divider>
+          <div class="progress-item">
+            <span class="span_text">车辆类别:</span>
+            <span class="span_text" v-text="memberType" />
+          </div>
+          <el-divider></el-divider>
+          <div class="progress-item">
+            <span class="span_text">进入次数:</span>
+            <span class="span_text" v-text="times_in" />
+          </div>
+          <el-divider></el-divider>
+          <div class="progress-item">
+            <span class="span_text">车位位置:</span>
+            <span class="span_text" v-text="space_in" />
+          </div>
+        </div>
+      </el-card>
     </el-col>
-    <!--    <el-col :span="9">-->
-    <!--      <div class="grid-content bg-purple-light">-->
-    <!--        <el-card class="box-card" shadow="never" body-style="padding=2px">-->
-    <!--          &lt;!&ndash;                <el-button v-if="isCameraFlag==false" type="primary" @click="getCompetence()">打开摄像头</el-button>&ndash;&gt;-->
-    <!--          &lt;!&ndash;        <el-button v-else-if="isCameraFlag==true" type="danger" @click="stopNavigator()">关闭摄像头</el-button>&ndash;&gt;-->
-<!--    <el-button @click="setImage()">拍照</el-button>-->
-    <!--          &lt;!&ndash;          <div>&ndash;&gt;-->
-    <!--          &lt;!&ndash;            <el-input placeholder="请输入内容" v-model="number_in" :disabled="true" style="width: 200px" >&ndash;&gt;-->
-    <!--          &lt;!&ndash;              <template slot="prepend">车牌号码:</template>&ndash;&gt;-->
-    <!--          &lt;!&ndash;            </el-input>&ndash;&gt;-->
-    <!--          &lt;!&ndash;          </div>&ndash;&gt;-->
-    <!--          <div v-text="number_in"></div>-->
-    <!--          <br><br>-->
-    <!--          <div v-if="imgSrc" class="img_bg_camera">-->
-    <!--            <img :src="imgSrc" alt="" class="tx_img">-->
-    <!--          </div>-->
-    <!--        </el-card>-->
-    <!--      </div>-->
-    <!--    </el-col>-->
+<!--    <el-button @click="enterOrLeave()">拍照</el-button>-->
   </el-row>
 
 </template>
@@ -46,42 +56,85 @@
 <script>
 import { mapGetters } from 'vuex'
 import PanelGroup from '@/components/PanelGroup'
-import BoxCard from '@/components/BoxCard'
 import { carLicense } from '@/api/car'
+import PanThumb from '@/components/PanThumb'
+import Mallki from '@/components/TextHoverEffect/Mallki'
+
+const synth = window.speechSynthesis
+const msg = new SpeechSynthesisUtterance()
 
 export default {
   name: 'Dashboard',
   computed: {
     ...mapGetters([
-      'name'
+      'name',
+      'avatar',
+      'roles'
     ])
   },
   components: {
     PanelGroup,
-    BoxCard
+    PanThumb, Mallki
   },
 
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        success: 'success',
+        pending: 'danger'
+      }
+      return statusMap[status]
+    }
+  },
   data() {
     return {
       isCameraFlag: false,
-      videoWidth: 900,
+      videoWidth: 1200,
       videoHeight: 550,
       imgSrc: '',
       thisCancas: null,
       thisContext: null,
       thisVideo: null,
-      number_in: '湘LBZ068',
-      imgFile: ''
+      imgFile: '',
+      statisticsData: {
+        article_count: 1024,
+        pageviews_count: 1024
+      },
+      number_in: '',
+      memberType: '',
+      times_in: '',
+      space_in: ''
     }
   },
   created() {
   },
-  // mounted() {
-  //   setTimeout(() => {
-  //     this.getCompetence()
-  //   }, 20)
-  // },
+  mounted() {
+    setTimeout(() => {
+      this.getCompetence()
+    }, 20)
+    this.timer = setInterval(this.enterOrLeave, 5000)
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
+  },
   methods: {
+    playVoice(text) {
+      this.handleSpeak(text) // 传入需要播放的文字
+    },
+    handleSpeak(text) {
+      msg.text = text // 文字内容: 小朋友，你是否有很多问号
+      msg.lang = 'zh-CN' // 使用的语言:中文
+      msg.volume = 10 // 声音音量：1
+      msg.rate = 1 // 语速：1
+      msg.pitch = 2 // 音高：1
+      synth.speak(msg) // 播放
+    },
+    // 语音停止
+    handleStop(e) {
+      msg.text = e
+      msg.lang = 'zh-CN'
+      synth.cancel(msg)
+    },
     // 调用权限（打开摄像头功能）
     getCompetence() {
       var _this = this
@@ -127,6 +180,35 @@ export default {
         console.log(err)
       })
     },
+
+    enterOrLeave() {
+      this.setImage()
+      const param = new FormData()
+      param.append('file', this.imgFile)
+      carLicense(param).then(response => {
+        if (response.code === 408) {
+          this.playVoice('车位已满，请返回')
+        } else {
+          this.number_in = response.data.car.carNum
+          this.times_in = response.data.car.carTimes
+          // console.log(response.data.space.spaceArea.area + response.data.span.spaceNum + '号')
+          this.space_in = `${response.data.space.spaceArea.area}` + `${response.data.space.spaceNum}号`
+          if (response.data.payment === 0) {
+            this.playVoice('临时车, 位置' + this.space_in)
+            this.memberType = '临时车'
+          } else if (response.data.payment === 1) {
+            this.playVoice('月租车')
+            this.memberType = '月租车'
+          } else {
+            this.playVoice('年租车')
+            this.memberType = '年租车'
+          }
+          console.log(response.data)
+        }
+      }).catch(() => {
+        this.playVoice('请稍等')
+      })
+    },
     //  绘制图片（拍照功能）
     setImage() {
       var _this = this
@@ -137,16 +219,7 @@ export default {
       _this.imgSrc = image
       this.$emit('refreshDataList', this.imgSrc)
       this.imgFile = this.dataURLtoFile(image, 'test.jpg')
-      const param = new FormData()
-      param.append('file', this.imgFile)
-      carLicense(param).then(response => {
-        console.log(1)
-        this.number_in = response.data
-        console.log(response.data)
-      }).catch(() => {
-
-      })
-      console.log(this.imgFile)
+      // console.log(this.imgFile)
     },
     // base64转文件
     dataURLtoFile(dataurl, filename) {
@@ -169,7 +242,16 @@ export default {
     }
   }
 }
+
 </script>
+
+<style lang="scss" >
+.box-card-component{
+  .el-card__header {
+    padding: 0px!important;
+  }
+}
+</style>
 
 <style lang="scss" scoped>
 .dashboard {
@@ -258,6 +340,60 @@ export default {
           width: 50px;
           height: 50px;
         }
+      }
+    }
+  }
+
+  .box-card-component {
+    .box-card-header {
+      position: relative;
+      height: 220px;
+      img {
+        width: 100%;
+        height: 100%;
+        transition: all 0.2s linear;
+        &:hover {
+          transform: scale(1.1, 1.1);
+          filter: contrast(130%);
+        }
+      }
+    }
+    .mallki-text {
+      position: absolute;
+      top: 0px;
+      left: 80px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .span_text {
+      //position: absolute;
+      //top: 0px;
+      //right: 0px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .panThumb {
+      z-index: 100;
+      height: 70px!important;
+      width: 70px!important;
+      position: absolute!important;
+      top: -45px;
+      left: 0px;
+      border: 5px solid #ffffff;
+      background-color: #fff;
+      margin: auto;
+      box-shadow: none!important;
+      ::v-deep .pan-info {
+        box-shadow: none!important;
+      }
+    }
+    .progress-item {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    @media only screen and (max-width: 1510px){
+      .mallki-text{
+        display: none;
       }
     }
   }

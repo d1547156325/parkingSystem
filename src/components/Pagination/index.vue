@@ -10,6 +10,7 @@
       v-bind="$attrs"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
+      @next-click="handleNextChange"
     >
       <el-button :disabled="lastPageBtnDisabled" icon="el-icon-ali-right" class="first-pager pageButton" @click="toLastPage" />
     </el-pagination>
@@ -45,7 +46,7 @@ export default {
     },
     limit: {
       type: Number,
-      default: 20
+      default: 5
     },
     pageSizes: {
       type: Array,
@@ -116,7 +117,7 @@ export default {
   methods: {
     handleSizeChange(val) {
       this.lastPageNum = Math.ceil(this.total / val)
-      console.info(this.lastPageNum)
+      // console.info('【handleSizeChange】' + this.lastPageNum)
       if (this.lastPageNum < 2) {
         this.lastPageBtnDisabled = true
       }
@@ -125,12 +126,16 @@ export default {
         scrollTo(0, 800)
       }
     },
+
     handleCurrentChange(val) {
       this.disabledFun(val)
       this.$emit('pagination', { current: val, size: this.pageSize })
       if (this.autoScroll) {
         scrollTo(0, 800)
       }
+    },
+    handleNextChange(val) {
+      this.disabledFun(val)
     },
     toFirstPage() {
       this.currentPage = 1
@@ -142,6 +147,7 @@ export default {
       this.handleCurrentChange(this.lastPageNum)
     },
     disabledFun(val) {
+      // console.log('【disabledFun】' + this.total)
       if (this.total > 0) {
         if (val === 1) {
           this.firstPageBtnDisabled = true

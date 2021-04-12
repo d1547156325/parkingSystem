@@ -3,7 +3,7 @@
     <!-- experimentId  plantName   experimentPurpose  experimentDescription  experimentAddress  startTime  endTime-->
     <el-form ref="form" :model="form" label-width="120px">
       <el-form-item label="区域编号" :rules="[{ required: true, message: '请选择区域编号！',trigger: 'blur'}]" prop="spaceArea">
-        <el-select v-model="form.spaceArea.spaceAreaId" placeholder="请选择区域编号">
+        <el-select v-model="form.spaceArea.spaceAreaId" placeholder="请选择区域编号" style="width: 200px">
           <el-option
             v-for="item in areaOptions"
             :key="item.spaceAreaId"
@@ -18,16 +18,6 @@
         prop="spaceNum"
       >
         <el-input v-model.number="form.spaceNum" placeholder="请输入车位编号" style="width: 200px" />
-      </el-form-item>
-      <el-form-item label="车位备注" :rules="[{ required: true, message: '请选择车位备注！',trigger: 'blur'}]" prop="spaceRemark">
-        <el-select v-model="form.spaceRemark" placeholder="请选择车位备注">
-          <el-option
-            v-for="item in remarkOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('form')">创建</el-button>

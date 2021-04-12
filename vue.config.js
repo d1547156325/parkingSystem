@@ -24,7 +24,7 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  publicPath: '/',
+  publicPath: './',
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
@@ -41,7 +41,7 @@ module.exports = {
     // before: require('./mock/mock-server.js'),
     proxy: {
       '/parking': { //  是.env.development 文件的 /dev-api
-        target: ' http://127.0.0.1:8080',
+        target: ' http://127.0.0.1:8080/',
         chargeOrigin: true, // 开启代理服务器
         pathRewrite: {
           // '^/dev-api': '',

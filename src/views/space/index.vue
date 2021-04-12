@@ -11,7 +11,7 @@
             <el-input v-model="input" placeholder="请输入关键词查询" size="small" style="width: 140px" />
           </el-form-item>
           <el-form-item label="车位状态:">
-            <el-select v-model="statusValue" placeholder="选择" size="small" style="width: 90px">
+            <el-select v-model="statusValue" placeholder="选择车位状态" size="small" style="width: 140px" @change="fetchData">
               <el-option
                 v-for="item in statusOptions"
                 :key="item.value"
@@ -20,16 +20,16 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="车位备注:">
-            <el-select v-model="remarkValue" placeholder="选择" size="small" style="width: 120px">
-              <el-option
-                v-for="item in remarkOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
+          <!--          <el-form-item label="车位备注:">-->
+          <!--            <el-select v-model="remarkValue" placeholder="选择" size="small" style="width: 120px">-->
+          <!--              <el-option-->
+          <!--                v-for="item in remarkOptions"-->
+          <!--                :key="item.value"-->
+          <!--                :label="item.label"-->
+          <!--                :value="item.value"-->
+          <!--              />-->
+          <!--            </el-select>-->
+          <!--          </el-form-item>-->
           <el-form-item>
             <el-button
               type="primary"
@@ -63,16 +63,16 @@
         type="selection"
         width="55"
       />
-<!--      <el-table-column-->
-<!--        prop="spaceId"-->
-<!--        label="车位ID"-->
-<!--        align="center"-->
-<!--        width="180"-->
-<!--      >-->
-<!--        <template slot-scope="scope">-->
-<!--          {{ scope.row.spaceId }}-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <!--      <el-table-column-->
+      <!--        prop="spaceId"-->
+      <!--        label="车位ID"-->
+      <!--        align="center"-->
+      <!--        width="180"-->
+      <!--      >-->
+      <!--        <template slot-scope="scope">-->
+      <!--          {{ scope.row.spaceId }}-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <el-table-column
         prop="spaceAddress"
         label="所属区域"
@@ -102,15 +102,15 @@
           <el-tag :type="scope.row.spaceStatus == 1? 'success':'info' ">{{ judgeStatus(scope.row.spaceStatus) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column
-        prop="spaceRemark"
-        label="车位备注"
-        align="center"
-      >
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.spaceRemark == 1? 'success':'info'">{{ judgeRemark(scope.row.spaceRemark) }}</el-tag>
-        </template>
-      </el-table-column>
+      <!--      <el-table-column-->
+      <!--        prop="spaceRemark"-->
+      <!--        label="车位备注"-->
+      <!--        align="center"-->
+      <!--      >-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <el-tag :type="scope.row.spaceRemark == 1? 'success':'info'">{{ judgeRemark(scope.row.spaceRemark) }}</el-tag>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <el-table-column
         prop="spaceRemark"
         label="停车号码"
@@ -128,8 +128,8 @@
       >
         <template slot-scope="scope">
           <!--          <el-button size="small" type="primary" icon="el-icon-edit">编辑</el-button>-->
-          <el-button v-if="scope.row.isOnline !== 0" size="small" type="danger" icon="el-icon-warning" @click="editIsOnline(scope.row)">下线</el-button>
-          <el-button v-if="scope.row.isOnline === 0" size="small" type="success" icon="el-icon-info" @click="editIsOnline(scope.row)">上线</el-button>
+          <el-button v-if="scope.row.spaceStatus !== 2" size="small" type="danger" icon="el-icon-warning" @click="editIsOnline(scope.row)">下线</el-button>
+          <el-button v-if="scope.row.spaceStatus === 2" size="small" type="success" icon="el-icon-info" @click="editIsOnline(scope.row)">上线</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -180,13 +180,13 @@ export default {
         label: '已下线'
       }],
       statusValue: '',
-      remarkOptions: [{
-        value: '0',
-        label: '自由车位'
-      }, {
-        value: '1',
-        label: '固定车位'
-      }],
+      // remarkOptions: [{
+      //   value: '0',
+      //   label: '自由车位'
+      // }, {
+      //   value: '1',
+      //   label: '固定车位'
+      // }],
       remarkValue: ''
     }
   },
@@ -199,10 +199,9 @@ export default {
       this.listLoading = true
       // eslint-disable-next-line no-undef
       if (this.statusValue === '') { this.statusValue = -1 }
-      if (this.remarkValue === '') { this.remarkValue = -1 }
-      listSpace(this.input, this.remarkValue, this.statusValue, (this.listQuery.current - 1), this.listQuery.size).then(response => {
+      listSpace(this.input, this.statusValue, (this.listQuery.current - 1), this.listQuery.size).then(response => {
         this.list = response.data.content
-        this.total = response.data.totalPages
+        this.total = response.data.totalElements
         // console.log(JSON.stringify(response.data))
         this.listLoading = false
       }).catch(() => {

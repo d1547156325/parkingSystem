@@ -8,10 +8,10 @@
           class="search-form"
         >
           <el-form-item label="记录:">
-            <el-input v-model="input" placeholder="请输入记录编号，车主名字，车牌号码" size="small" style="width: 260px" />
+            <el-input v-model="input" placeholder="请输入关键字" size="small" style="width: 140px" />
           </el-form-item>
-          <el-form-item label="车位状态:">
-            <el-select v-model="value" placeholder="请选择车位状态或备注" size="small">
+          <el-form-item label="车辆类别:">
+            <el-select v-model="value" placeholder="请选择车辆类别" size="small" style="width: 140px" @change="fetchData">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -63,7 +63,7 @@
         width="120"
       >
         <template slot-scope="scope">
-          {{ judgeCarNum(scope.row.car) }}
+          {{ scope.row.car.carOwner }}
         </template>
       </el-table-column>
       <el-table-column
@@ -72,12 +72,12 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ judgeCarOwner(scope.row.car) }}
+          {{ scope.row.car.carNum }}
         </template>
       </el-table-column>
       <el-table-column
         prop="spaceStatus"
-        label="支付方式"
+        label="类别"
         align="center"
       >
 
@@ -99,7 +99,7 @@
         prop="spaceAddress"
         label="入场日期"
         align="center"
-        width="120px"
+        width="160px"
       >
         <template slot-scope="scope">
           <i class="el-icon-time" />
@@ -110,7 +110,7 @@
         prop="spaceAddress"
         label="出场日期"
         align="center"
-        width="120px"
+        width="160px"
       >
         <template slot-scope="scope">
           <i class="el-icon-time" />
@@ -126,18 +126,18 @@
           {{ scope.row.money }}
         </template>
       </el-table-column>
-      <el-table-column
-        prop="operate"
-        label="操作"
-        align="center"
-        width="210"
-      >
-        <template slot-scope="scope">
-          <el-button size="small" type="primary" icon="el-icon-edit">图表查看</el-button>
-          <!--          <el-button v-if="scope.row.spaceStatus !== 2" size="small" type="danger" icon="el-icon-warning">下线</el-button>-->
-          <!--          <el-button v-if="scope.row.spaceStatus === 2" size="small" type="info" icon="el-icon-info">上线</el-button>-->
-        </template>
-      </el-table-column>
+<!--      <el-table-column-->
+<!--        prop="operate"-->
+<!--        label="操作"-->
+<!--        align="center"-->
+<!--        width="210"-->
+<!--      >-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-button size="small" type="primary" icon="el-icon-edit">图表查看</el-button>-->
+<!--          &lt;!&ndash;          <el-button v-if="scope.row.spaceStatus !== 2" size="small" type="danger" icon="el-icon-warning">下线</el-button>&ndash;&gt;-->
+<!--          &lt;!&ndash;          <el-button v-if="scope.row.spaceStatus === 2" size="small" type="info" icon="el-icon-info">上线</el-button>&ndash;&gt;-->
+<!--        </template>-->
+<!--      </el-table-column>-->
     </el-table>
     <pagination
       v-show="total>0"
@@ -175,22 +175,20 @@ export default {
       list: null,
       options: [{
         value: '0',
-        label: '临时支付'
+        label: '临时车'
       }, {
         value: '1',
-        label: '月租卡'
+        label: '月租车'
       }, {
         value: '2',
-        label: '年租卡'
-      }, {
-        value: '3',
-        label: '固定车'
+        label: '年租车'
       }],
       value: ''
     }
   },
   created() {
     this.fetchData()
+    console.log(this.$myStore.visible)
   },
   methods: {
     // 获取数据
@@ -198,7 +196,7 @@ export default {
       this.listLoading = true
       listRecord(this.input, this.value, (this.listQuery.current - 1), this.listQuery.size).then(response => {
         this.list = response.data.content
-        this.total = response.data.totalPages
+        this.total = response.data.totalElements
         this.listLoading = false
       }).catch(() => {
         this.listLoading = false
@@ -206,11 +204,7 @@ export default {
     },
     // 判断状态
     judgePay(payment) {
-      if (payment === 0) { return '临时支付' } else if (payment === 1) { return '月租卡' } else if (payment === 2) { return '年租卡' } else return '固定车'
-    },
-    // 判断备注
-    judgeRemark(spaceRemark) {
-      if (spaceRemark === 1) { return '固定车主车位' } else { return '自由车位' }
+      if (payment === 0) { return '临时车' } else if (payment === 1) { return '月租卡' } else if (payment === 2) { return '年租卡' } else return '车位中'
     },
     judgeCarOwner(car) {
       if (car != null) { return car.carOwner }
@@ -219,7 +213,7 @@ export default {
       if (car != null) { return car.carNum }
     },
     judgeSpace(space) {
-      if (space != null) { return space.spaceNum }
+      return space.spaceArea.area + space.spaceNum + '号'
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
