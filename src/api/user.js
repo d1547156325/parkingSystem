@@ -4,7 +4,7 @@ export function listUser(keyword, page, limit) {
   return request({
     url: '/user/listUser',
     method: 'get',
-    param: { keyword, page, limit }
+    params: { keyword, page, limit }
   })
 }
 

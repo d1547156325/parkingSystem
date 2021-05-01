@@ -127,17 +127,17 @@ export const constantRoutes = [
     }]
   },
 
-  // {
-  //   path: '/role',
-  //   component: Layout,
-  //   redirect: '/role',
-  //   children: [{
-  //     path: 'role',
-  //     name: 'role',
-  //     component: () => import('@/views/role/index'),
-  //     meta: { title: '管理员管理', icon: 'dashboard' }
-  //   }]
-  // },
+  {
+    path: '/role',
+    component: Layout,
+    redirect: '/role',
+    children: [{
+      path: 'role',
+      name: 'role',
+      component: () => import('@/views/role/index'),
+      meta: { title: '管理员管理', icon: 'dashboard' }
+    }]
+  },
 
   {
     path: '/info',

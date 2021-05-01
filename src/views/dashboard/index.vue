@@ -48,7 +48,7 @@
         </div>
       </el-card>
     </el-col>
-<!--    <el-button @click="enterOrLeave()">拍照</el-button>-->
+    <el-button @click="enterOrLeave()">拍照</el-button>
   </el-row>
 
 </template>
@@ -109,10 +109,10 @@ export default {
   created() {
   },
   mounted() {
-    setTimeout(() => {
-      this.getCompetence()
-    }, 20)
-    this.timer = setInterval(this.enterOrLeave, 5000)
+    // setTimeout(() => {
+    //   this.getCompetence()
+    // }, 20)
+    // this.timer = setInterval(this.enterOrLeave, 5000)
   },
   beforeDestroy() {
     clearInterval(this.timer)

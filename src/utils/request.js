@@ -93,7 +93,7 @@ service.interceptors.response.use(
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-
+        router.push('/')
       })
     } else {
       Message({

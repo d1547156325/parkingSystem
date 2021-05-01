@@ -8,23 +8,14 @@
           class="search-form"
         >
           <el-form-item label="关键字:">
-            <el-input v-model="input" placeholder="请输入关键字" size="small" style="width: 120px" />
+            <el-input v-model="input" placeholder="请输入关键字" size="small" style="width: 140px" />
           </el-form-item>
-<!--          <el-form-item label="车位状态:">-->
-<!--            <el-select placeholder="请选择车位状态或备注" size="small">-->
-<!--              <el-option-->
-<!--                v-for="item in options"-->
-<!--                :key="item.value"-->
-<!--                :label="item.label"-->
-<!--                :value="item.value"-->
-<!--              />-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
           <el-form-item>
             <el-button
               type="primary"
               icon="el-icon-search"
               size="small"
+              @click="fetchData"
             >查询
             </el-button>
             <el-button
@@ -75,7 +66,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          {{ scope.row.trueName }}
         </template>
       </el-table-column>
 
@@ -85,7 +76,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          {{ scope.row.role }}
         </template>
       </el-table-column>
 
@@ -114,6 +105,9 @@
 <script>
 import Collapse from '@/components/Collapse'
 import Pagination from '@/components/Pagination'
+
+import { listUser } from '@/api/user'
+
 export default {
   name: 'User',
   components: { Collapse, Pagination },
@@ -132,11 +126,7 @@ export default {
         spaceNum: null
       },
       listLoading: false,
-      list: [{
-        userId: 0,
-        username: 'huhu',
-        name: '张三'
-      }]
+      list: null
     }
   },
   created() {
@@ -145,15 +135,14 @@ export default {
   methods: {
     // 获取数据
     fetchData() {
-      // this.listLoading = true
-      // eslint-disable-next-line no-undef
-      // getList(this.listQuery.current, this.listQuery.size, this.listQuery.experimentId, this.listQuery.experimentStatus).then(response => {
-      //   // this.list = response.data
-      //   this.total = 1000
-      //   this.listLoading = false
-      // }).catch(() => {
-      //   this.listLoading = false
-      // })
+      this.listLoading = true
+      listUser(this.input, (this.listQuery.current - 1), this.listQuery.size).then(response => {
+        this.list = response.data.content
+        this.total = response.data.totalElements
+        this.listLoading = false
+      }).catch(() => {
+        this.listLoading = false
+      })
     },
     // 判断状态
     judgeStatus(spaceStatus) {
