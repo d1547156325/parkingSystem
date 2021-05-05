@@ -39,6 +39,7 @@
             >查询
             </el-button>
             <el-button
+              v-if="token === 'systemadmin'"
               type="primary"
               icon="el-icon-plus"
               size="small"
@@ -150,6 +151,7 @@ import { listSpace, editIsOnline } from '@/api/space'
 import Collapse from '@/components/Collapse'
 import Pagination from '@/components/Pagination'
 import { Message } from 'element-ui'
+import {getToken} from "@/utils/auth";
 export default {
   name: 'Space',
   components: { Collapse, Pagination },
@@ -180,14 +182,8 @@ export default {
         label: '已下线'
       }],
       statusValue: '',
-      // remarkOptions: [{
-      //   value: '0',
-      //   label: '自由车位'
-      // }, {
-      //   value: '1',
-      //   label: '固定车位'
-      // }],
-      remarkValue: ''
+      remarkValue: '',
+      token: null
     }
   },
   created() {
@@ -196,6 +192,7 @@ export default {
   methods: {
     // 获取数据
     fetchData() {
+      this.token = getToken()
       this.listLoading = true
       // eslint-disable-next-line no-undef
       if (this.statusValue === '') { this.statusValue = -1 }

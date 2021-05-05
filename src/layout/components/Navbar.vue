@@ -19,6 +19,11 @@
           <a target="_blank" href="https://github.com/d1547156325/parkingSystem">
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
+          <router-link to="/role/alterPassword">
+            <el-dropdown-item>
+              修改密码
+            </el-dropdown-item>
+          </router-link>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">退出</span>
           </el-dropdown-item>

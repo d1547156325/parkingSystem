@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container operator-segment">
+  <div v-if="token==='systemadmin'" class="app-container operator-segment">
     <Collapse>
       <div slot="controls" class="btn-item" style="display: inline-block">
         <el-form
@@ -22,6 +22,7 @@
               type="primary"
               icon="el-icon-plus"
               size="small"
+              @click="gotoAdd"
             >添加
             </el-button>
           </el-form-item>
@@ -76,7 +77,7 @@
         align="center"
       >
         <template slot-scope="scope">
-          {{ scope.row.role }}
+          {{ judgeRole(scope.row.role) }}
         </template>
       </el-table-column>
 
@@ -87,7 +88,7 @@
         width="210"
       >
         <template slot-scope="scope">
-          <el-button size="small" type="primary" icon="el-icon-edit">编辑</el-button>
+          <el-button size="small" type="primary" icon="el-icon-edit" @click="gotoUpdate(scope.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -107,6 +108,7 @@ import Collapse from '@/components/Collapse'
 import Pagination from '@/components/Pagination'
 
 import { listUser } from '@/api/user'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'User',
@@ -121,12 +123,11 @@ export default {
       total: 1,
       listQuery: {
         current: 1,
-        size: 10,
-        spaceId: null,
-        spaceNum: null
+        size: 10
       },
       listLoading: false,
-      list: null
+      list: null,
+      token: null
     }
   },
   created() {
@@ -135,6 +136,7 @@ export default {
   methods: {
     // 获取数据
     fetchData() {
+      this.token = getToken()
       this.listLoading = true
       listUser(this.input, (this.listQuery.current - 1), this.listQuery.size).then(response => {
         this.list = response.data.content
@@ -144,16 +146,19 @@ export default {
         this.listLoading = false
       })
     },
-    // 判断状态
-    judgeStatus(spaceStatus) {
-      if (spaceStatus === 1) { return '已占用' } else if (spaceStatus === 0) { return '未占用' } else { return '已下线' }
-    },
-    // 判断备注
-    judgeRemark(spaceRemark) {
-      if (spaceRemark === 1) { return '固定车主车位' } else { return '自由车位' }
+    judgeRole(role) {
+      if (role === 'ROLE_SYSADMIN') return '超级管理员'
+      else if (role === 'ROLE_ADMIN') return '管理员'
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+    },
+    gotoAdd() {
+      this.$router.push({ path: '/role/userAdd' })
+    },
+    gotoUpdate(val) {
+      // console.log(val)
+      this.$router.push({ path: '/role/userUpdate', query: { user: val }})
     }
   }
 }

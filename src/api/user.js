@@ -10,7 +10,29 @@ export function listUser(keyword, page, limit) {
 
 export function updateUser(data) {
   return request({
-    url: '/user/listUser',
+    url: '/user/update',
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data
+  })
+}
+
+export function alterPassword(data) {
+  return request({
+    url: '/user/alterPassword',
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data
+  })
+}
+
+export function addUser(data) {
+  return request({
+    url: '/user/addUser',
     method: 'post',
     headers: {
       'Content-Type': 'application/json'

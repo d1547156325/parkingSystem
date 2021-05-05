@@ -88,13 +88,19 @@ service.interceptors.response.use(
         })
       })
     } else if (error.response.status === 403) {
-      MessageBox.confirm('您的权限不够，请联系管理员', '未授权', {
+      MessageBox.alert('您的权限不够，请联系管理员', '未授权', {
         confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        router.push('/')
+        callback: action => {
+          router.push('/')
+        }
       })
+      // MessageBox.confirm('您的权限不够，请联系管理员', '未授权', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(() => {
+      //   router.push('/')
+      // })
     } else {
       Message({
         message: error.message,

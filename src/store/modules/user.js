@@ -24,6 +24,9 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_USER: (state, user) => {
+    state.user = user
   }
 }
 
@@ -57,8 +60,9 @@ const actions = {
           return reject('Verification failed, please Login again.')
         }
         const avatar = 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
-        commit('SET_NAME', data.username)
+        commit('SET_NAME', data.trueName)
         commit('SET_AVATAR', avatar)
+        commit('SET_USER', data)
         resolve(data)
       }).catch(error => {
         reject(error)

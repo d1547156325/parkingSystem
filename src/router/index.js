@@ -136,6 +136,21 @@ export const constantRoutes = [
       name: 'role',
       component: () => import('@/views/role/index'),
       meta: { title: '管理员管理', icon: 'dashboard' }
+    }, {
+      path: 'userAdd',
+      name: 'userAdd',
+      component: () => import('@/views/role/user-add'),
+      hidden: true
+    }, {
+      path: 'userUpdate',
+      name: 'userUpdate',
+      component: () => import('@/views/role/user-update'),
+      hidden: true
+    }, {
+      path: 'alterPassword',
+      name: 'alterPassword',
+      component: () => import('@/views/role/alter-password'),
+      hidden: true
     }]
   },
 
