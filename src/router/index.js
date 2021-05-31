@@ -154,17 +154,17 @@ export const constantRoutes = [
     }]
   },
 
-  {
-    path: '/info',
-    component: Layout,
-    redirect: '/info',
-    children: [{
-      path: 'info',
-      name: 'info',
-      component: () => import('@/views/info/index'),
-      meta: { title: '系统信息', icon: 'dashboard' }
-    }]
-  },
+  // {
+  //   path: '/info',
+  //   component: Layout,
+  //   redirect: '/info',
+  //   children: [{
+  //     path: 'info',
+  //     name: 'info',
+  //     component: () => import('@/views/info/index'),
+  //     meta: { title: '系统信息', icon: 'dashboard' }
+  //   }]
+  // },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

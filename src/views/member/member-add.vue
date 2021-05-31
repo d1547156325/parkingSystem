@@ -58,30 +58,11 @@
           @confirm="onConfirm"
         />
       </van-popup>
-      <!--      <div v-if="typeValue === '固定车位'">-->
-      <!--        <van-field-->
-      <!--          readonly-->
-      <!--          clickable-->
-      <!--          label="选择车位"-->
-      <!--          :value="spaceValue"-->
-      <!--          placeholder="选择固定车位"-->
-      <!--          :rules="[{ required: true, message: '请选择固定车位' }]"-->
-      <!--          @click="showPicker1 = true"-->
-      <!--        />-->
-      <!--        <van-popup v-model="showPicker1" round position="bottom">-->
-      <!--          <van-picker-->
-      <!--            show-toolbar-->
-      <!--            :columns="spaces"-->
-      <!--            @change="onChange"-->
-      <!--            @cancel="showPicker1 = false"-->
-      <!--            @confirm="onConfirm1"-->
-      <!--          />-->
-      <!--        </van-popup>-->
-      <!--      </div>-->
       <van-cell-group>
         <van-field label="购买日期" :value="DateForm(memberInfo.openDate)" readonly />
-        <van-field label="到期日期" :value="memberInfo.endDate" readonly />
-        <van-field label="充值金额" :value="memberInfo.money" readonly />
+        <van-field label="到期日期" :value="DateForm(memberInfo.endDate)" readonly />
+        <van-field label="本次充值" :value="thisMoney" readonly />
+        <van-field label="总充值金额" :value="memberInfo.money" readonly />
       </van-cell-group>
       <div style="margin: 16px;">
         <van-button round block type="info" native-type="submit">充值</van-button>
@@ -115,7 +96,7 @@ export default {
         money: 0,
         memberType: null
       },
-      allMoney: 0,
+      thisMoney: 0,
       typeValue: '',
       showPicker: false,
       showPicker1: false,
@@ -130,9 +111,9 @@ export default {
     fetchData() {
       console.log(this.$route.query.phone)
       this.memberInfo.phone = this.$route.query.phone
+      this.thisMoney = 1000
       memberLogin(this.memberInfo.phone).then(response => {
         if (response.data !== null) {
-          this.allMoney = response.data.money
           this.memberInfo = response.data
           this.flag = true
           this.judgeMemberType(response.data.memberType)
@@ -153,7 +134,7 @@ export default {
     },
     // 充值
     onSubmit() {
-      this.memberInfo.money = this.allMoney + this.memberInfo.money
+      this.memberInfo.money = this.thisMoney + this.memberInfo.money
       console.log(JSON.stringify(this.memberInfo))
       updateMember(JSON.stringify(this.memberInfo)).then(response => {
         console.log(response)
@@ -168,27 +149,28 @@ export default {
       return moment(date).format('YYYY-MM-DD HH:mm')
     },
     onConfirm(value) {
+      console.log(value)
       this.typeValue = value
       if (this.flag === false) {
         this.memberInfo.openDate = this.DateForm(new Date())
         if (value === '月租卡') {
           this.memberInfo.memberType = 1
           this.memberInfo.endDate = this.DateForm(new Date().setMonth(new Date().getMonth() + 1))
-          this.memberInfo.money = 1000
+          this.thisMoney = 1000
         } else if (value === '年租卡') {
           this.memberInfo.memberType = 2
           this.memberInfo.endDate = this.DateForm(new Date().setFullYear(new Date().getFullYear() + 1))
-          this.memberInfo.money = 15000
+          this.thisMoney = 15000
         }
       } else {
         if (value === '月租卡') {
           this.memberInfo.memberType = 1
           this.memberInfo.endDate = this.DateForm(new Date(this.memberInfo.endDate).setMonth(new Date().getMonth() + 1))
-          this.memberInfo.money = 1000
+          this.thisMoney = 1000
         } else if (value === '年租卡') {
           this.memberInfo.memberType = 2
           this.memberInfo.endDate = this.DateForm(new Date(this.memberInfo.endDate).setFullYear(new Date().getFullYear() + 1))
-          this.memberInfo.money = 15000
+          this.thisMoney = 15000
         }
       }
       this.showPicker = false

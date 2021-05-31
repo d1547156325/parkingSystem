@@ -76,6 +76,12 @@ export default {
   created() {
     this.fetchData()
   },
+  mounted() {
+    this.timer = setInterval(this.fetchData(), 5000)
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
+  },
   methods: {
     fetchData() {
       // 所有车位
@@ -95,7 +101,7 @@ export default {
         this.spaceDe = response.data.totalElements
       }).catch(() => {
         // this.listLoading = false
-      }),
+      })
       // 今日车辆
 
       enterRecord(this.DateForm(new Date()), this.DateForm(new Date().setDate(new Date().getDate() + 1))).then(response => {

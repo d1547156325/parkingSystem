@@ -48,7 +48,7 @@
         </div>
       </el-card>
     </el-col>
-    <el-button @click="enterOrLeave()">拍照</el-button>
+<!--    <el-button @click="enterOrLeave()">拍照</el-button>-->
   </el-row>
 
 </template>
@@ -115,7 +115,7 @@ export default {
     // this.timer = setInterval(this.enterOrLeave, 5000)
   },
   beforeDestroy() {
-    clearInterval(this.timer)
+    // clearInterval(this.timer)
   },
   methods: {
     playVoice(text) {
@@ -206,7 +206,7 @@ export default {
           console.log(response.data)
         }
       }).catch(() => {
-        this.playVoice('请稍等')
+        // this.playVoice('请稍等')
       })
     },
     //  绘制图片（拍照功能）
